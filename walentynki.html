@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>💌 Valentine?</title>
+  <style>
+    :root{
+      --bg1:#ffdde8;
+      --bg2:#fff6fa;
+      --ink:#2b2b2b;
+      --pink:#ff4d88;
+      --pink2:#ff7aa8;
+      --card:#ffffffcc;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      min-height:100vh;
+      display:grid;
+      place-items:center;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      color:var(--ink);
+      background: radial-gradient(circle at 20% 10%, var(--bg2), var(--bg1));
+      overflow:hidden;
+    }
+    .hearts{
+      position:fixed; inset:0;
+      pointer-events:none;
+      opacity:.55;
+    }
+    .heart{
+      position:absolute;
+      width:16px; height:16px;
+      transform: rotate(45deg);
+      background: linear-gradient(135deg, var(--pink), var(--pink2));
+      border-radius:4px;
+      animation: floatUp linear infinite;
+      filter: blur(.2px);
+    }
+    .heart:before,.heart:after{
+      content:"";
+      position:absolute;
+      width:16px; height:16px;
+      background: inherit;
+      border-radius:50%;
+    }
+    .heart:before{left:-8px; top:0}
+    .heart:after{top:-8px; left:0}
+
+    @keyframes floatUp{
+      from{ transform:translateY(110vh) rotate(45deg); opacity:0}
+      10%{opacity:1}
+      to{ transform:translateY(-20vh) rotate(45deg); opacity:0}
+    }
+
+    .card{
+      width:min(520px, 92vw);
+      background:var(--card);
+      backdrop-filter: blur(10px);
+      border:1px solid #ffffffaa;
+      border-radius:24px;
+      padding:28px 22px;
+      box-shadow: 0 20px 60px #ff4d8822;
+      text-align:center;
+      position:relative;
+    }
+    .badge{
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+      padding:8px 12px;
+      border-radius:999px;
+      background:#fff;
+      border:1px solid #ffd1e1;
+      font-size:14px;
+      margin-bottom:14px;
+    }
+    h1{
+      margin:10px 0 8px;
+      font-size: clamp(28px, 5vw, 40px);
+      letter-spacing:-0.02em;
+    }
+    p{
+      margin:0 auto 18px;
+      max-width:42ch;
+      line-height:1.4;
+      font-size:16px;
+      opacity:.9;
+    }
+    .photo{
+      width:100%;
+      height:220px;
+      border-radius:18px;
+      background: linear-gradient(135deg, #ffe1ec, #fff);
+      display:grid;
+      place-items:center;
+      margin:14px 0 18px;
+      overflow:hidden;
+    }
+    .photo small{opacity:.7}
+    .row{
+      display:flex;
+      gap:12px;
+      justify-content:center;
+      flex-wrap:wrap;
+      margin-top:6px;
+      position:relative;
+    }
+    button{
+      border:0;
+      cursor:pointer;
+      padding:14px 18px;
+      border-radius:14px;
+      font-weight:700;
+      font-size:16px;
+      transition: transform .08s ease, box-shadow .2s ease;
+    }
+    .yes{
+      background: linear-gradient(135deg, var(--pink), var(--pink2));
+      color:white;
+      box-shadow: 0 12px 30px #ff4d8840;
+    }
+    .yes:hover{transform: translateY(-1px)}
+    .no{
+      background:#fff;
+      border:1px solid #ffd1e1;
+      color:#b42355;
+      position:relative;
+    }
+    .note{
+      margin-top:14px;
+      font-size:14px;
+      opacity:.8;
+      min-height:20px;
+    }
+    .reveal{
+      display:none;
+      margin-top:16px;
+      padding:14px 14px;
+      border-radius:16px;
+      background:#fff;
+      border:1px solid #ffd1e1;
+    }
+    .reveal strong{color:#b42355}
+    canvas{
+      position:fixed; inset:0;
+      pointer-events:none;
+    }
+  </style>
+</head>
+<body>
+  <div class="hearts" id="hearts"></div>
+  <canvas id="confetti"></canvas>
+
+  <div class="card" id="card">
+    <div class="badge">💌 to <span id="name">my favorite person</span></div>
+    <h1>Zostaniesz moją walentynką? 💖</h1>
+    <p id="msg">I made this tiny website because you make my days better — and I want to make yours extra special.</p>
+
+    <div class="photo">
+  <img 
+    id="mainPhoto"
+    src="photo_before.jpg"
+    style="width:100%;height:100%;object-fit:cover;"
+  />
+</div>
+
+    <div class="row">
+      <button class="yes" id="yesBtn">TAK 💞</button>
+      <button class="no" id="noBtn">nie 🙈</button>
+    </div>
+
+    <div class="note" id="note"></div>
+
+    <div class="reveal" id="reveal">
+      <div style="font-size:18px;margin-bottom:6px;">🎉 HURA! 🎉</div>
+      <div>Oficjanie: <strong>najelpsza walentynka na świecie</strong> 💗</div>
+      <div style="margin-top:10px;font-size:14px;opacity:.85;">
+        <span id="dateIdea">Nie mogę się doczekać!</span> 😽😊
+      </div>
+    </div>
+  </div>
+
+<script>
+  // Customize these 3 lines:
+  const HER_NAME = "Słońce";
+  const CUSTOM_MESSAGE = "Nie wyobrażam sobie spędzić tego dnia bez ciebie";
+  const DATE_IDEA = "Nie mogę się doczekać!";
+
+  document.getElementById("name").textContent = HER_NAME;
+  document.getElementById("msg").textContent = CUSTOM_MESSAGE;
+  document.getElementById("dateIdea").textContent = DATE_IDEA;
+
+  // Floating hearts background
+  const hearts = document.getElementById("hearts");
+  for(let i=0;i<28;i++){
+    const h=document.createElement("div");
+    h.className="heart";
+    h.style.left = Math.random()*100 + "vw";
+    h.style.animationDuration = (6+Math.random()*8) + "s";
+    h.style.animationDelay = (-Math.random()*10) + "s";
+    h.style.opacity = (0.25+Math.random()*0.75);
+    h.style.transform = `translateY(${Math.random()*100}vh) rotate(45deg)`;
+    hearts.appendChild(h);
+  }
+
+  // "No" button playful dodge + messages
+  const noBtn = document.getElementById("noBtn");
+  const note = document.getElementById("note");
+  const lines = [
+    "jesteś pewna? 😭",
+    "spróbuj jeszcze raz 😳",
+    "Viki no... 🥺",
+    "ale przecież jesteśmy soulmates 💘",
+    "poważnie? 😤💗",
+    "dobra... zapytam ładnie: proszę? 🙏"
+  ];
+  let n=0;
+
+  function dodge(){
+    const card = document.getElementById("card");
+    const rect = card.getBoundingClientRect();
+    const x = (Math.random() * (rect.width - 120)) - (rect.width/2 - 60);
+    const y = (Math.random() * 80) - 40;
+    noBtn.style.transform = `translate(${x}px, ${y}px)`;
+    note.textContent = lines[Math.min(n, lines.length-1)];
+    n++;
+  }
+  noBtn.addEventListener("mouseenter", dodge);
+  noBtn.addEventListener("click", dodge);
+
+  // Confetti
+  const canvas = document.getElementById("confetti");
+  const ctx = canvas.getContext("2d");
+  function resize(){ canvas.width = innerWidth; canvas.height = innerHeight; }
+  addEventListener("resize", resize); resize();
+
+  let confetti = [];
+  function burst(){
+    confetti = [];
+    for(let i=0;i<220;i++){
+      confetti.push({
+        x: innerWidth/2,
+        y: innerHeight/2,
+        vx: (Math.random()-0.5)*14,
+        vy: (Math.random()-0.8)*14,
+        r: 2+Math.random()*3,
+        a: 1,
+        g: 0.22 + Math.random()*0.08,
+      });
+    }
+    animate();
+  }
+  function animate(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    confetti.forEach(p=>{
+      p.vy += p.g;
+      p.x += p.vx;
+      p.y += p.vy;
+      p.a -= 0.008;
+      ctx.globalAlpha = Math.max(p.a,0);
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fill();
+    });
+    ctx.globalAlpha = 1;
+    confetti = confetti.filter(p=>p.a>0 && p.y < innerHeight+20);
+    if(confetti.length) requestAnimationFrame(animate);
+  }
+
+  // YES action
+  document.getElementById("yesBtn").addEventListener("click", ()=>{
+    document.getElementById("reveal").style.display = "block";
+    note.textContent = "KOCHAM CIĘ 💗";
+    burst();
+    // soften the "No" button after yes
+    noBtn.style.display = "none";
+
+    const img = document.getElementById("mainPhoto");
+  img.src = "photo_after.jpg";
+  img.style.transition = "transform 0.4s ease, opacity 0.4s ease";
+  img.style.opacity = "0.9";
+  });
+</script>
+</body>
+</html>
